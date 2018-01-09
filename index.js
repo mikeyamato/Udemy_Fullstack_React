@@ -6,7 +6,7 @@ const app = express();
 // create route handler with two arguments
 // arrow function will have 2 arguments, req & res
 app.get('/', (req, res) => {
-	res.send({ hi: 'there' });
+	res.send({ bye: 'buddy' });
 });
 
 // for heroku purpose create a const to let it dictate what port to use. 
