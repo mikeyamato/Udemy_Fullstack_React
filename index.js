@@ -1,13 +1,66 @@
-// import express library
+// add express library
 const express = require ('express');
-// we'll use the express library for the app
+// require mongoose 
+const mongoose = require ('mongoose');
+// add cookie function helper
+const cookieSession = require ('cookie-session');
+// add passport library and make use of cookies
+const passport = require ('passport');
+// add keys from keys.js
+const keys = require('./config/keys');
+// add passport from services folder
+// since we aren't assigning anything to a variable, a variable isn't needed
+require ('./models/User');
+require ('./services/googlePassport');
+require ('./services/linkedinPassport');
+require ('./services/githubPassport');
+
+
+// connect to mongo by adding the address to mongo within the parens
+// get the address from mlab
+// but instead of putting it here, place it inside `/config/keys.js`
+// i received a deprication warning with `npm run dev`. the following should
+// fix that. add a 2nd argument
+mongoose.connect(keys.mongoURI, {
+	useMongoClient: true
+});
+
+
+// 'const authRoutes' is a function that takes our app object and attaches 
+// the routes to it. therefore we'll need to call it with 'app' as our object
+// below
+// const authRoutes = require ('./routes/authRoutes');
+
 const app = express();
 
-// create route handler with two arguments
-// arrow function will have 2 arguments, req & res
-app.get('/', (req, res) => {
-	res.send({ bye: 'buddy' });
-});
+app.use(
+	// pass to the function 'app.use()', cookieSession. then to this we're
+	// going to call a configuration object
+	cookieSession({
+		// config object expects 2 properties to be contained
+		
+		// how long the cookie can live in the browser before expiring.
+		// we'll say 30 days. time has to be passed as milliseconds.
+		// 30 days * 24 hours in a day * 60 minutes in a hour
+		// * 60 seconds in a minute * 1000 milliseconds to 1 second
+		maxAge: 30 * 24 * 60 * 60 * 1000,
+		// key to encrypt our cookie. put the actual key in 'keys.js'.
+		// ensure this is an array
+		keys: [keys.cookieKey]
+	})
+);
+// tell passport to use cookies to handle authentication. make 2 
+// additional calls
+app.use(passport.initialize());
+app.use(passport.session());
+
+// authRoutes(app);
+
+// this has been refactore
+require ('./routes/authRoutes')(app);
+
+
+
 
 // for heroku purpose create a const to let it dictate what port to use. 
 // capitalize PORT to let other developers know that this is a constant and
