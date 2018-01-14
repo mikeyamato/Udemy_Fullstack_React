@@ -44,7 +44,9 @@ passport.use(
 			clientSecret: keys.googleClientSecret,
 			// capitalize 'URL'. this is to tell the site where to redirect the callback
 			// to. basically the route to use after they grant permission to our app
-			callbackURL: '/auth/google/callback'
+			callbackURL: '/auth/google/callback',
+			// to address http vs https issues
+			proxy: true
 		// add a 2nd arguement as a fat arrow
 		}, 
 		(accessToken, refreshToken, profile, done) => {

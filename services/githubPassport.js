@@ -44,7 +44,9 @@ passport.use(
 			clientSecret: keys.githubClientSecret,
 			// capitalize 'URL'. this is to tell the site where to redirect the callback
 			// to. basically the route to use after they grant permission to our app
-			callbackURL: '/auth/github/callback'
+			callbackURL: '/auth/github/callback',
+			// to address http vs https issues
+			proxy: true
 		// add a 2nd arguement as a fat arrow
 		}, 
 		(accessToken, refreshToken, profile, done) => {
