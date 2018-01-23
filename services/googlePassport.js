@@ -45,11 +45,11 @@ passport.use(
 			// capitalize 'URL'. this is to tell the site where to redirect the callback
 			// to. basically the route to use after they grant permission to our app
 			callbackURL: '/auth/google/callback',
-			// to address http vs https issues
+			// to address http vs https issues. keeps things https
 			proxy: true
 		// add a 2nd arguement as a fat arrow
 		}, 
-		(accessToken, refreshToken, profile, done) => {
+		async (accessToken, refreshToken, profile, done) => {
 			// console.log('access token', accessToken);
 			// console.log('refresh token', refreshToken);
 			// console.log('profile', profile.id);
@@ -57,33 +57,31 @@ passport.use(
 			// use a model class to initiate a search of all records inside the 
 			// collection to figure out if there are any repeats
 			// this returns a promise
-			User.findOne({ googleId: profile.id })
-				.then((existingUser) => {
-					// checking to see if id exists with a truthy statement
-					if (existingUser) {
-						// we already have a record with the given profile id
+			const existingUser = await User.findOne({ googleId: profile.id })
+			// checking to see if id exists with a truthy statement
+			if (existingUser) {
+				// we already have a record with the given profile id
 
-						// to tell passport we are done apply 2 arguments. null and user
-						// record, 'existingUser'. 
-						done(null, existingUser);
-					} else {
-						// we don't have a user record with this id. make a new record
+				// to tell passport we are done apply 2 arguments. null and user
+				// record, 'existingUser'. 
+				// by adding 'return' we can remove 'else'. we still need the 'else'
+				// logic
+				return done(null, existingUser);
+			} 
+				// we don't have a user record with this id. make a new record
 
-						// use the model class ('User') to create a new instance of a user who
-						// has a google ID of profile.id
-						// this creates one insance of a record. this doesn't get saved to the 
-						// db automatically. it currently just lives in the express api. 
-						// to save we need to add a function, `.save()`, at the end
-						new User ({ googleId: profile.id }).save()
-							// since the process is async, chain on a promise
-							// we are creating another model instance with the promise but 
-							// this one is much better to use since things may have been
-							// added to it. take the 'user' that was just saved to he db
-							// and pass in 2 arguments
-							.then(user => done(null, user));
-					}
-				}
-			)
+				// use the model class ('User') to create a new instance of a user who
+				// has a google ID of profile.id
+				// this creates one insance of a record. this doesn't get saved to the 
+				// db automatically. it currently just lives in the express api. 
+				// to save we need to add a function, `.save()`, at the end
+				const user = await new User ({ googleId: profile.id }).save()
+					// since the process is async, chain on a promise
+					// we are creating another model instance with the promise but 
+					// this one is much better to use since things may have been
+					// added to it. take the 'user' that was just saved to he db
+					// and pass in 2 arguments
+				done(null, user);
 		}
 	)
 );

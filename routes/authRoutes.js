@@ -27,14 +27,30 @@ module.exports = app => {
 		passport.authenticate('google', {
 			// we are stating what access we want to have inside the users profile
 			// these are just 2 predefined items by google
-			scope: ['profile', 'email']
+			scope: ['profile', 'email'],
+			// make sure we are given a prompt of what account to use when logging in
+			prompt: "select_account"
 		})
 	);
 
 	// although this looks very similar to when we are requesting authorization,
 	// passport understands it needs to do something else because a 'code' string 
-	// is attached in the URL
-	app.get('/auth/google/callback', passport.authenticate('google'));
+	// is attached in the URL. so when someone goes to '/auth/google/callback' we
+	// are passing the user off to the 'passport.authenticate' function. this 
+	// authenticate function is middleware. after 'passport.authenticate' has been 
+	// authenticated we need to instruct what to do next. do this by chaining on 
+	// another route handler. 
+	app.get(
+		'/auth/google/callback', 
+		passport.authenticate('google'),
+		(req, res) => {
+			// whenever a request comes to this function we are going to redirect who-
+			// ever is making this request off to someother route inside this app. 
+			// res (response) has a function attached to it called 'redirect'. 'redirect'
+			// will push the user to '/surveys'
+			res.redirect('/surveys');
+		}
+	);
 
 	
 	// ********* LinkedIn OAuth *********
@@ -45,7 +61,15 @@ module.exports = app => {
 		})
 	);
 	
-	app.get('/auth/linkedin/callback', passport.authenticate('linkedin'));
+	app.get('/auth/linkedin/callback', passport.authenticate('linkedin'),
+	(req, res) => {
+		// whenever a request comes to this function we are going to redirect who-
+		// ever is making this request off to someother route inside this app. 
+		// res (response) has a function attached to it called 'redirect'. 'redirect'
+		// will push the user to '/surveys'
+		res.redirect('/surveys');
+	}
+);
 	
 	// ********* Github OAuth *********
 	app.get(
@@ -55,7 +79,15 @@ module.exports = app => {
 		})
 	);
 	
-	app.get('/auth/github/callback', passport.authenticate('github'));
+	app.get('/auth/github/callback', passport.authenticate('github'),
+	(req, res) => {
+		// whenever a request comes to this function we are going to redirect who-
+		// ever is making this request off to someother route inside this app. 
+		// res (response) has a function attached to it called 'redirect'. 'redirect'
+		// will push the user to '/surveys'
+		res.redirect('/surveys');
+	}
+);
 	
 	// ********************************
 
@@ -64,8 +96,9 @@ module.exports = app => {
 		// logout automatically attached to the request object by passport 
 		// logout takes the cookie and kills the uid in it
 		req.logout();
-		// tell the user they are no longer signed in
-		res.send(req.user);
+		// tell the user they are no longer signed in by going back to the root
+		// route
+		res.redirect('/');
 	});
 
 	// add a 3rd route handler that will deal with anyone making a get request to 

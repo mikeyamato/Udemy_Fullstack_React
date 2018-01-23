@@ -22,6 +22,7 @@ require ('./services/githubPassport');
 // i received a deprication warning with `npm run dev`. the following should
 // fix that. add a 2nd argument
 mongoose.connect(keys.mongoURI, {
+	// extra code added to address deprication issue (okay to remove)
 	useMongoClient: true
 });
 
@@ -35,7 +36,7 @@ const app = express();
 
 app.use(
 	// pass to the function 'app.use()', cookieSession. then to this we're
-	// going to call a configuration object
+	// going to call a configuration object. this is middleware. 
 	cookieSession({
 		// config object expects 2 properties to be contained
 		
@@ -50,15 +51,34 @@ app.use(
 	})
 );
 // tell passport to use cookies to handle authentication. make 2 
-// additional calls
+// additional calls. this is middleware. 
 app.use(passport.initialize());
 app.use(passport.session());
 
 // authRoutes(app);
 
-// this has been refactore
+// this has been refactored
 require ('./routes/authRoutes')(app);
 
+// make sure express behaves correctly in production
+// this will run when it's only inside heroku
+// 'NODE_ENV' is an environment variable that is set by 
+// heroku and must mean we're in 'production' so the code inside will run. 
+if (process.env.NODE_ENV === 'production') {
+	// express will serve up production assets such as main.js file or main.css 
+	// basically a route that express doesn't handle
+	// if there are no paths that match what's above, then try looking in
+	// 'client/build' first. 
+	app.use(express.static('client/build'));
+
+	// express will serve up the index.html (do not confuse with index.js) file if it 
+	// doesn't recognize the route. because of order of operation, this will run after
+	// 'client/build' is reviewed first
+	const path = require ('path');
+	app.get('*', (req,res) => {
+		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+	});
+}
 
 
 

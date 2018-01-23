@@ -16,3 +16,6 @@ module.exports = {
 	mongoURI: process.env.MONGO_URI,
 	cookieKey: process.env.COOKIE_KEY 
 };
+
+// mmmmmmmmmmmmm heroku link mmmmmmmmmmmmm
+// https://secret-basin-51587.herokuapp.com
