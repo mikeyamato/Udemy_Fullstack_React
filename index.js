@@ -64,7 +64,7 @@ require ('./routes/authRoutes')(app);
 // this will run when it's only inside heroku
 // 'NODE_ENV' is an environment variable that is set by 
 // heroku and must mean we're in 'production' so the code inside will run. 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === production) {
 	// express will serve up production assets such as main.js file or main.css 
 	// basically a route that express doesn't handle
 	// if there are no paths that match what's above, then try looking in

@@ -23,7 +23,7 @@ class Header extends Component {
 			// not logged in
 			case false:
 				// include a link to log in
-				return <li><a href="/auth/linkedin">Login with LinkedIn</a></li>;
+				return <li><a href="/auth/google">Login with Google</a></li>;
 			// logged out
 			default:
 				return <li><a href="/api/logout">Log out</a></li>;
