@@ -10,6 +10,9 @@ const keys = require('../config/keys');
 // 1 argument means we are trying to fetch something out of mongoose
 const User = mongoose.model('users');
 
+// used to remove deprication warning
+mongoose.Promise = global.Promise;
+
 // 'serializeUser' to assist with generating unique tag w/ 2 arguments.
 // 'user' is what is pulled from the db
 passport.serializeUser((user, done) => {

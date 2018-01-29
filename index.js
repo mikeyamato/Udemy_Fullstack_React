@@ -6,6 +6,8 @@ const mongoose = require ('mongoose');
 const cookieSession = require ('cookie-session');
 // add passport library and make use of cookies
 const passport = require ('passport');
+// require the bodyParser middleware 
+const bodyParser = require('body-parser'); 
 // add keys from keys.js
 const keys = require('./config/keys');
 // add passport from services folder
@@ -21,10 +23,10 @@ require ('./services/githubPassport');
 // but instead of putting it here, place it inside `/config/keys.js`
 // i received a deprication warning with `npm run dev`. the following should
 // fix that. add a 2nd argument
-mongoose.connect(keys.mongoURI, {
-	// extra code added to address deprication issue (okay to remove)
-	useMongoClient: true
-});
+mongoose.connect(keys.mongoURI, 
+	// used to remove deprication warning
+	{useMongoClient: true}
+);
 
 
 // 'const authRoutes' is a function that takes our app object and attaches 
@@ -33,6 +35,11 @@ mongoose.connect(keys.mongoURI, {
 // const authRoutes = require ('./routes/authRoutes');
 
 const app = express();
+
+// any kind of request (post, put, use, etc.) that has a request-body that 
+// comes into our application, the middleware will parse the body 
+// and assign it to the req.body property of the incoming request object
+app.use(bodyParser.json());
 
 app.use(
 	// pass to the function 'app.use()', cookieSession. then to this we're
@@ -59,6 +66,9 @@ app.use(passport.session());
 
 // this has been refactored
 require ('./routes/authRoutes')(app);
+// this returns a function. the 'require' statement will turn into a 
+// function that we immedately call with our express 'app' object
+require ('./routes/billingRoutes')(app);
 
 // make sure express behaves correctly in production
 // this will run when it's only inside heroku

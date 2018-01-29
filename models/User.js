@@ -16,7 +16,8 @@ const userSchema = new Schema ({
 	// although the id is a set of numbers it was wrapped inside a string
 	googleId: String,
 	linkedInId: String,
-	githubId: String
+	githubId: String,
+	credits: { type: Number, default: 0 }
 });
 
 // to create a model class and tell mongoose to be aware that a new collection 

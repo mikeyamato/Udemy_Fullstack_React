@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import Payments from './Payments';
 
 // we are making a 'class' based component because we expect to place
 // a helper or function in here that is responsible for what to render
@@ -26,7 +27,16 @@ class Header extends Component {
 				return <li><a href="/auth/google">Login with Google</a></li>;
 			// logged out
 			default:
-				return <li><a href="/api/logout">Log out</a></li>;
+				return [
+					// cleaned this up a bit to include the Payments component
+					// add a 'key'. it must be unique and consistent across renders. 
+					// since the key really doesn't change it can be anything. 
+					<li key='1'><Payments /></li>,
+					<li key='3' style={{ margin: '0 10px' }}>
+						Credits: {this.props.auth.credits}
+					</li>,
+					<li key='2'><a href="/api/logout">Log out</a></li>
+				];
 		}
 	}
 	
