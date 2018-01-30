@@ -34,10 +34,8 @@ module.exports = app => {
 			description: '$5 for 5 credits',
 			source: req.body.id // obtained with Stripe.js
 		});
-		console.log('1111111111 charge', charge);
-		req.user.credits = +5;
+		req.user.credits += 5;
 		const user = await req.user.save();
 		res.send(user);
-		console.log('2222222222 user ', user);
 	});
 };
