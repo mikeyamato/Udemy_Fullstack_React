@@ -56,6 +56,7 @@ passport.use(
 			// console.log('access token', accessToken);
 			// console.log('refresh token', refreshToken);
 			// console.log('profile', profile.id);
+			// console.log('profile', profile);
 
 			// use a model class to initiate a search of all records inside the 
 			// collection to figure out if there are any repeats
@@ -78,7 +79,13 @@ passport.use(
 				// this creates one insance of a record. this doesn't get saved to the 
 				// db automatically. it currently just lives in the express api. 
 				// to save we need to add a function, `.save()`, at the end
-				const user = await new User ({ googleId: profile.id }).save()
+				const googleUser = { 
+					googleId: profile.id,
+					email: profile.emails[0].value, 
+					key: null
+				};
+
+				const user = await new User(googleUser).save();
 					// since the process is async, chain on a promise
 					// we are creating another model instance with the promise but 
 					// this one is much better to use since things may have been

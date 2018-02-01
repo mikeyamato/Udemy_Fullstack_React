@@ -27,6 +27,8 @@
     "passport-github2": "^0.1.11",
     "passport-google-oauth20": "^1.0.0",
     "passport-linkedin-oauth2": "^1.5.0",
-    "stripe": "^5.4.0"
+    "passport-totp": "0.0.2",
+    "stripe": "^5.4.0",
+    "thirty-two": "^1.0.2"
   }
 }

@@ -35,7 +35,10 @@ class Header extends Component {
 					<li key='3' style={{ margin: '0 10px' }}>
 						Credits: {this.props.auth.credits}
 					</li>,
-					<li key='2'><a href="/api/logout">Log out</a></li>
+					<li key='2'><a href="/api/logout">Log out</a></li>,
+					<li key='4'><a href="/setup">Setup 2FA</a></li>,
+					<li key='5'><a href="/login-otp">Login OTP</a></li>,
+					<li key='6'><a href="/account">2FA Account</a></li>
 				];
 		}
 	}

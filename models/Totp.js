@@ -15,10 +15,11 @@ const userSchema = new Schema ({
 	// we need a property of 'googleId' with a type of 'String'
 	// although the id is a set of numbers it was wrapped inside a string
 	googleId: String,
-	linkedInId: String,
-	githubId: String,
 	email: String,
-	credits: { type: Number, default: 0 }
+	key: String,
+	period: Number
+
+
 });
 
 // to create a model class and tell mongoose to be aware that a new collection 
@@ -26,4 +27,4 @@ const userSchema = new Schema ({
 // of the collection, `users`. 2nd argument will be `userSchema`
 // mongoose will not overwrite data when it starts up everytime. it just
 // makes note that it already exists
-mongoose.model('users', userSchema);
+mongoose.model('totp', userSchema);

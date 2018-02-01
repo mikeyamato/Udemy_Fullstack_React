@@ -14,7 +14,7 @@ import { FETCH_USER } from '../actions/types';
 // later switch this to 'null' as one of the 3 situations (null, user model, false)
 export default function (state = null, action) {
 	// log all actions that the reducer gets called with
-	console.log("sup", action);
+	// console.log("sup", action);
 
 	
 	// we'll 'switch' over the action type. currently none are defined in 

@@ -27,9 +27,14 @@ import * as actions from '../actions';
 // make sure import statements are at the top of the file
 import Header from './Header';
 import Landing from './Landing';
+import Account from './Account';
+import Setup from './Setup';
+import LoginOTP from './LoginOTP';
 
+// the following are dummy components
 const Dashboard = () => <h2>Dashboard</h2>
 const SurveyNew = () => <h2>SurveyNew</h2>
+
 
 // refactor to be class based
 class App extends Component {
@@ -71,6 +76,9 @@ class App extends Component {
 						{/* previous 'Route' */}
 						<Route exact path='/surveys' component={Dashboard} />
 						<Route exact path='/surveys/new' component={SurveyNew} />
+						<Route exact path='/login-otp' component={LoginOTP} />
+						<Route exact path='/setup' component={Setup} />
+						<Route exact path='/account' component={Account} />
 					</div>
 				</BrowserRouter>
 			</div>
