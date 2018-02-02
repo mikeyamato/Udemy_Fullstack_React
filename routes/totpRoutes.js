@@ -3,26 +3,36 @@
 
 const passport = require ('passport');
 const mongoose = require ('mongoose');
-// const Totp = mongoose.model('totp');
+const Totp = mongoose.model('totp');
 const requireLogin = require('../middlewares/requireLogin');
 const utils = require ('../utils/utils');
 const base32 = require ('thirty-two');
 
 module.exports = app => {
 
+	// ********************************
+
+	// add a 3rd route handler that will deal with anyone making a get request to 
+	// the app. 1st argument, route name is arbitrary. 2nd argument, pass an arrow
+	// function. this will be automatically called when someone makes a 
+	// get request to the route. add the 'req' and 'res' argument objects to
+	// this function
+	app.get('/api/current_user', (req, res) => {
+		res.send(req.user);
+	});
+
 
 // ********* TOTP OAuth *********
-	
-	// app.get('/', function(req, res){
+// app.get('/', function(req, res){
 	// 	res.render('index', { user: req.user });
 	// });
 
 	// To view account details, user must be authenticated using two factors
-	app.get('/auth/account', requireLogin, ensureSecondFactor, (req, res) => {
+	app.get('/account', requireLogin, ensureSecondFactor, (req, res) => {
 		res.render('account', { user: req.user });
 	});
 
-	app.get('/auth/setup', requireLogin, (req, res, next) => {
+	app.get('/setup', requireLogin, (req, res, next) => {
 		Totp.findOne({ googleId: req.user.googleId }, (err, user) => {
 			// const = user;
 			// const secretKey = user.key
@@ -44,7 +54,7 @@ module.exports = app => {
 				// generate QR code for scanning into Google Authenticator
 				// reference: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 				var otpUrl = 'otpauth://totp/' + req.user.email
-					+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Bitch%20Ass';
+									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Bitch%20Ass';
 				var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
 				
 				console.log('user exist - req.user ', user);
@@ -76,12 +86,16 @@ module.exports = app => {
 					console.log('no user exist - user ', user);
 					console.log('no user exist - key ', key);
 					console.log('no user exist - qrImage ', qrImage);
-					// res.send(req);
-					// res.render('setup', { 
+					// res.sendFile({qrImage});
+					// res.render('setup',  {
+					// res.json({ qrImage: qrImage });
 					// 	// user: req.user, 
 					// 	// key: encodedKey, 
-					// 	// qrImage: qrImage 
+					// 	qrImage: qrImage
+					// 	// qrImage
+					// 	// 'hello'
 					// });
+
 
 					const totpSetup = { 
 						googleId: req.user.googleId,
@@ -89,11 +103,13 @@ module.exports = app => {
 						key: key,
 						period: 30
 					};
-
+					// save to db
 					Totp(totpSetup).save();
 				});
 			} else {
-				return res.redirect('/skip-setup-login-using-2fa');
+				// go sign in
+				// should this go back home? this is for people who can't sign in, right?
+				return res.redirect('/login-otp');
 			}
 		});
 	});
@@ -112,59 +128,45 @@ module.exports = app => {
 	// 	}
 	// );
 	
-	app.get('/auth/login-otp', requireLogin, (req, res, next) => {
+	app.get('/login-otp', requireLogin, (req, res, next) => {
 		// If user hasn't set up two-factor auth, redirect
-		Totp.findOne({googleId: req.user.id}, (err, user) => {
+		Totp.findOne({googleId: req.user.googleId}, (err, user) => {
+			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - id: ',  {googleId: req.user.googleId});
+			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - user: ',  user);
 			if (err) { 
 				return next(err); 
 			}
 			if (!user) { 
-				return res.redirect('/auth/setup'); 
+				return res.redirect('/setup'); 
 			}
 			return next();
 		});
-	}, (req, res) => {
-		res.render('login-otp', { 
-			user: req.user, 
-			message: req.flash('error') });
+	// }, (req, res) => {
+	// 	console.log('$$$$$$$$$$$$ req.user: ', req.user)
+	// 	// res.render('login-otp', { 
+	// 	// 	user: req.user, 
+	// 	// 	message: req.flash('error') });
 		}
 	);
 	
+	// get the otp code back
 	app.post(
-		'/auth/login-otp', 
-		passport.authenticate('totp', { failureRedirect: '/auth/login-otp' }),
+		'/login-otp', 
+		passport.authenticate('totp', { 
+			failureRedirect: '/login-otp' 
+		}),
 		(req, res) => {
 			req.session.secondFactor = 'totp';
 			res.redirect('/');
 		}
 	);
 	
+	// used for signing into 'account'
 	function ensureSecondFactor(req, res, next) {
 		if (req.session.secondFactor == 'totp') { return next(); }
-		res.redirect('/auth/login-otp')
+		res.redirect('/login-otp')
 	}
 
-
-	
-	
-	// logout route
-	app.get('/api/logout', (req, res) => {
-		// logout automatically attached to the request object by passport 
-		// logout takes the cookie and kills the uid in it
-		req.logout();
-		// tell the user they are no longer signed in by going back to the root
-		// route
-		res.redirect('/');
-	});
-
-	// add a 3rd route handler that will deal with anyone making a get request to 
-	// the app. 1st argument, route name is arbitrary. 2nd argument, pass an arrow
-	// function. this will be automatically called when someone makes a 
-	// get request to the route. add the 'req' and 'res' argument objects to
-	// this function
-	app.get('/api/current_user', (req, res) => {
-		res.send(req.user);
-	});
 	
 };
 

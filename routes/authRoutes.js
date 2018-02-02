@@ -63,16 +63,17 @@ module.exports = app => {
 
 	// ********* TOTP OAuth *********
 	
+
 	// app.get('/', function(req, res){
 	// 	res.render('index', { user: req.user });
 	// });
 
 	// To view account details, user must be authenticated using two factors
-	app.get('/account', requireLogin, ensureSecondFactor, (req, res) => {
+	app.get('/auth/account', requireLogin, ensureSecondFactor, (req, res) => {
 		res.render('account', { user: req.user });
 	});
 
-	app.get('/setup', requireLogin, (req, res, next) => {
+	app.get('/auth/setup', requireLogin, (req, res, next) => {
 		Totp.findOne({ googleId: req.user.googleId }, (err, user) => {
 			// const = user;
 			// const secretKey = user.key
@@ -168,7 +169,7 @@ module.exports = app => {
 	// 	}
 	// );
 	
-	app.get('/login-otp', requireLogin, (req, res, next) => {
+	app.get('/auth/login-otp', requireLogin, (req, res, next) => {
 		// If user hasn't set up two-factor auth, redirect
 		Totp.findOne({googleId: req.user.googleId}, (err, user) => {
 			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - id: ',  {googleId: req.user.googleId});
@@ -177,23 +178,25 @@ module.exports = app => {
 				return next(err); 
 			}
 			if (!user) { 
-				return res.redirect('/setup'); 
+				console.log('333333333333 not user')
+				return res.redirect('/auth/setup'); 
 			}
+			console.log('444444444444 next')
 			return next();
 		});
-	// }, (req, res) => {
-	// 	console.log('$$$$$$$$$$$$ req.user: ', req.user)
-	// 	// res.render('login-otp', { 
-	// 	// 	user: req.user, 
-	// 	// 	message: req.flash('error') });
+	}, (req, res) => {
+		console.log('$$$$$$$$$$$$ req.user: ', req.user)
+		// res.render('login-otp', { 
+		// 	user: req.user, 
+		// 	message: req.flash('error') });
 		}
 	);
 	
 	// get the otp code back
 	app.post(
-		'/login-otp', 
+		'/auth/login-otp', 
 		passport.authenticate('totp', { 
-			failureRedirect: '/login-otp' 
+			failureRedirect: '/auth/login-otp' 
 		}),
 		(req, res) => {
 			req.session.secondFactor = 'totp';
