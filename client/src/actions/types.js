@@ -2,4 +2,4 @@
 // inside the 'actions' directory. make sure we import this type in 
 // 'index.js'
 export const FETCH_USER = 'fetch_user';
-// export const FETCH_TOTP = 'fetch_totp';
+export const FETCH_TOTP = 'fetch_totp';

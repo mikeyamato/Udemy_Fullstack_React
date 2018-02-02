@@ -1,3 +1,3 @@
 export * from './userActions';
-// export * from './totpActions';
+export * from './totpActions';
 

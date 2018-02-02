@@ -3,7 +3,7 @@
 
 const passport = require ('passport');
 const mongoose = require ('mongoose');
-// const Totp = mongoose.model('totp');
+const Totp = mongoose.model('totp');
 const requireLogin = require('../middlewares/requireLogin');
 const utils = require ('../utils/utils');
 const base32 = require ('thirty-two');
@@ -51,11 +51,11 @@ module.exports = app => {
 				console.log('user exist - key ', user.key);
 				console.log('user exist - qrImage ', qrImage);
 				
-				// res.render('setup', { 
-				// 	user: req.user, 
-				// 	key: encodedKey, 
-				// 	qrImage: qrImage 
-				// });
+				res.json({ 
+					user: req.user, 
+					key: encodedKey, 
+					qrImage: qrImage 
+				});
 
 			} 
 			if (!user) {
@@ -97,6 +97,10 @@ module.exports = app => {
 			}
 		});
 	});
+
+	app.get('/skip-setup-login-using-2fa', (req, res) => {
+		console.log("Hey there!");
+	})
 
 	// app.get('/login', (req, res) => {
 	// 	res.render('login', { 

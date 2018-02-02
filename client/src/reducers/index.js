@@ -7,6 +7,7 @@
 
 import { combineReducers } from 'redux';
 import authReducer from './authReducer';
+import totpReducer from './totpReducer';
 
 // place our 'combineReducers' call and immediately export it
 export default combineReducers({
@@ -17,5 +18,6 @@ export default combineReducers({
 
 	// the 'auth' piece of state is being manufactured/produced by the 
 	// 'authReducer'  
-	auth: authReducer
+	auth: authReducer,
+	totp: totpReducer
 });
