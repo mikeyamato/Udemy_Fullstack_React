@@ -64,9 +64,7 @@ module.exports = app => {
 	// ********* TOTP OAuth *********
 	
 
-	// app.get('/', function(req, res){
-	// 	res.render('index', { user: req.user });
-	// });
+	
 
 	// To view account details, user must be authenticated using two factors
 	app.get('/auth/account', requireLogin, ensureSecondFactor, (req, res) => {
@@ -74,10 +72,10 @@ module.exports = app => {
 	});
 
 	app.get('/auth/setup', requireLogin, (req, res, next) => {
+		console.log('******************************');
+		console.log('*** get route: /auth/setup ***');
+		console.log('******************************');
 		Totp.findOne({ googleId: req.user.googleId }, (err, user) => {
-			// const = user;
-			// const secretKey = user.key
-			// const googleIdentification= req.user.googleId
 
 			console.log('first pull - user: ', user);
 			// console.log('first pull - google id: ', { googleId: user.googleId} || null);
@@ -150,7 +148,7 @@ module.exports = app => {
 			} else {
 				// go sign in
 				// should this go back home? this is for people who can't sign in, right?
-				return res.redirect('/login-otp');
+				return res.redirect('/');
 			}
 		});
 	});
@@ -170,6 +168,9 @@ module.exports = app => {
 	// );
 	
 	app.get('/auth/login-otp', requireLogin, (req, res, next) => {
+		console.log('**********************************');
+		console.log('*** get route: /auth/login-otp ***');
+		console.log('**********************************');
 		// If user hasn't set up two-factor auth, redirect
 		Totp.findOne({googleId: req.user.googleId}, (err, user) => {
 			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - id: ',  {googleId: req.user.googleId});
@@ -179,16 +180,20 @@ module.exports = app => {
 			}
 			if (!user) { 
 				console.log('333333333333 not user')
-				return res.redirect('/auth/setup'); 
+				return res.redirect('/'); 
 			}
-			console.log('444444444444 next')
-			return next();
+			// console.log('444444444444 next')
+			// return next();
 		});
+		/*
 	}, (req, res) => {
+		// this isn't needed as it was meant to flash a message previously. at the same time though,
+		// it's pulling 'User' info and not 'Totp' info.
 		console.log('$$$$$$$$$$$$ req.user: ', req.user)
 		// res.render('login-otp', { 
 		// 	user: req.user, 
 		// 	message: req.flash('error') });
+		*/
 		}
 	);
 	
@@ -196,7 +201,7 @@ module.exports = app => {
 	app.post(
 		'/auth/login-otp', 
 		passport.authenticate('totp', { 
-			failureRedirect: '/auth/login-otp' 
+			failureRedirect: '/login-otp' 
 		}),
 		(req, res) => {
 			req.session.secondFactor = 'totp';
@@ -207,7 +212,8 @@ module.exports = app => {
 	// used for signing into 'account'
 	function ensureSecondFactor(req, res, next) {
 		if (req.session.secondFactor == 'totp') { return next(); }
-		res.redirect('/login-otp')
+		// if not signed in then go back home (or anywhere)
+		res.redirect('/')
 	}
 
 

@@ -1,7 +1,7 @@
 const passport = require('passport');
 const TotpStrategy = require('passport-totp').Strategy;
 const mongoose = require ('mongoose');
-const keys = require('../config/keys');
+// const keys = require('../config/keys');
 
 const Totp = mongoose.model('totp');
 
@@ -22,8 +22,7 @@ passport.use(
 	new TotpStrategy(
   function(totp, done) {
     // setup function, supply key and period to done callback
-    Totp.findOne(req.user.googleId, function(err, obj) {
-			console.log('*********req.user.googleId: ', req.user.googleId);
+    Totp.findOne({ googleId: req.user.id }, (err, obj) => {
 			console.log('*********obj: ', obj);
 			if (err) { 
 				return done(err); 
