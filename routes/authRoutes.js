@@ -93,7 +93,7 @@ module.exports = app => {
 				// generate QR code for scanning into Google Authenticator
 				// reference: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 				var otpUrl = 'otpauth://totp/' + req.user.email
-									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Bitch%20Ass';
+									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Fuck%20You';
 				var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
 				
 				console.log('user exist - req.user ', user);
@@ -105,9 +105,8 @@ module.exports = app => {
 				// 	key: encodedKey, 
 				// 	qrImage: qrImage 
 				// });
-
 			} 
-			if (!user) {
+			else {
 				// new two-factor setup.  generate and save a secret key
 				var key = utils.randomKey(10);
 				var encodedKey = base32.encode(key);
@@ -145,10 +144,11 @@ module.exports = app => {
 					// save to db
 					Totp(totpSetup).save();
 				});
-			} else {
-				// go sign in
-				// should this go back home? this is for people who can't sign in, right?
-				return res.redirect('/');
+			// } else {
+			// 	// go sign in
+			// 	// should this go back home? this is for people who can't sign in, right?
+			// 	console.log('why is this getting hit?')
+			// 	return res.redirect('/');
 			}
 		});
 	});

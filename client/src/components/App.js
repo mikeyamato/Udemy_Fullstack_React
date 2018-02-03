@@ -30,6 +30,8 @@ import Landing from './Landing';
 import Account from './Account';
 import Setup from './Setup';
 import LoginOTP from './LoginOTP';
+import Testing from './Testing';
+
 
 // the following are dummy components
 const Dashboard = () => <h2>Dashboard</h2>
@@ -79,6 +81,7 @@ class App extends Component {
 						<Route exact path='/login-otp' component={LoginOTP} />
 						<Route exact path='/setup' component={Setup} />
 						<Route exact path='/account' component={Account} />
+						<Route exact path='/testing' component={Testing} />
 					</div>
 				</BrowserRouter>
 			</div>

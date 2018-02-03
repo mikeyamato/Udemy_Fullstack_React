@@ -38,7 +38,8 @@ class Header extends Component {
 					<li key='2'><a href="/api/logout">Log out</a></li>,
 					<li key='4'><a href="/auth/setup">Setup 2FA</a></li>,
 					<li key='5'><a href="/auth/login-otp">Login OTP</a></li>,
-					<li key='6'><a href="/auth/account">2FA Account</a></li>
+					<li key='6'><a href="/auth/account">2FA Account</a></li>,
+					<li key='7'><a href="/testing">Throw Away</a></li>
 				];
 		}
 	}
