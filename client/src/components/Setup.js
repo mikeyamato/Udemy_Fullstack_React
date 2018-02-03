@@ -6,8 +6,20 @@ import * as actions from '../actions';
 
 
 class Setup extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      test: null,
+    };
+  }
+
+  componentDidMount() {
+    this.props.fetchTotp();
+  }
+
   render() {
-	console.log(this.props);
+	const totp = this.props.totp ? this.props.totp : "null";
+	console.log(totp);
     return (
       // to center text on screen using jsx add an object to style
       // 1st bracket indicates we're passing in js, the 2nd bracket
@@ -15,7 +27,7 @@ class Setup extends Component {
       <div style={{ textAlign: "center" }}>
         <h1>Setup</h1>
         <h4>Scan QR code with Google Authenticator.</h4>
-        <img src="qrImage" alt="QR code" />
+        <img src={totp.qrImage} alt="QR code" />
         <h4>Or enter the code below.</h4>
 
         <button>
