@@ -15,16 +15,18 @@ class Header extends Component {
 		// this is a good place to add a switch statement since 
 		// 'this.props.auth' can be 1 of 3 statements.
 		// 'this.props.auth' tells us if we are signed into the app or not.
+		console.log(this);
+		
 		switch (this.props.auth) {
 			// thinking
 			case null:
-				// leave blank because i don't want to show anything at all 
-				// while it's trying to login 
-				return;
+			// leave blank because i don't want to show anything at all 
+			// while it's trying to login 
+			return;
 			// not logged in
 			case false:
-				// include a link to log in
-				return <li><a href="/auth/google">Login with Google</a></li>;
+			// include a link to log in
+			return <li><a href="/auth/google">Login with Google</a></li>;
 			// logged out
 			default:
 				return [
@@ -36,9 +38,9 @@ class Header extends Component {
 						Credits: {this.props.auth.credits}
 					</li>,
 					<li key='2'><a href="/api/logout">Log out</a></li>,
-					<li key='4'><a href="/auth/setup">Setup 2FA</a></li>,
-					<li key='5'><a href="/auth/login-otp">Login OTP</a></li>,
-					<li key='6'><a href="/auth/account">2FA Account</a></li>,
+					<li key='4'><a href="/setup">Setup 2FA</a></li>,
+					<li key='5'><a href="/login-otp">Login OTP</a></li>,
+					<li key='6'><a href="/account">2FA Account</a></li>,
 					<li key='7'><a href="/testing">Throw Away</a></li>
 				];
 		}
@@ -63,7 +65,7 @@ class Header extends Component {
 					<ul className='right'>
 						{/* use jsx to show what situation we are in based on the above statement */}
 						{/* there used to be <li> here */}
-						{this.renderContent()}
+						{this.renderContent()}												
 					</ul>
 				</div>
 			</nav>
@@ -77,7 +79,9 @@ function mapStateToProps({auth}){
 	// to visually see if we are logged in or not we want to take advantage of 'auth' within
 	// 'reducers' > 'index.js'
 	return { auth };
+	
 };
+
 
 // be sure to pass 'mapStateToProps' as an argument for 'connect'
 export default connect(mapStateToProps)(Header);

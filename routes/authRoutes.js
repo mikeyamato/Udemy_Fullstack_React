@@ -73,9 +73,9 @@ module.exports = app => {
 
 	app.get('/auth/setup', requireLogin, (req, res, next) => {
 		console.log('******************************');
-		console.log('*** get route: /auth/setup ***');
+		console.log('*** get route: /setup ***');
 		console.log('******************************');
-		Totp.findOne({ googleId: req.user.googleId }, (err, user) => {
+		Totp.findOne(req._id, (err, user) => {
 
 			console.log('first pull - user: ', user);
 			// console.log('first pull - google id: ', { googleId: user.googleId} || null);
@@ -93,10 +93,10 @@ module.exports = app => {
 				// generate QR code for scanning into Google Authenticator
 				// reference: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 				var otpUrl = 'otpauth://totp/' + req.user.email
-									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Fuck%20You';
+									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Fuck%20You%20Bitch';
 				var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
 				
-				console.log('user exist - req.user ', user);
+				console.log('user exist - user._id ', user._id);
 				console.log('user exist - key ', user.key);
 				console.log('user exist - qrImage ', qrImage);
 				
@@ -114,14 +114,14 @@ module.exports = app => {
 				// generate QR code for scanning into Google Authenticator
 				// reference: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 				var otpUrl = 'otpauth://totp/' + req.user.email
-										+ '?secret=' + encodedKey + '&period=30&issuer=Yo%20Momma';
+										+ '?secret=' + encodedKey + '&period=30&issuer=Fuck%20You%20Bitch';
 				var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
 		
-				Totp.findOne({ googleId: req.user.id }, { key: key, period: 30 }, (err) => {
+				Totp.findOne(req._id, { key: key, period: 30 }, (err) => {
 					if (err) { 
 						return next(err); 
 					}
-					console.log('no user exist - user ', user);
+					console.log('no user exist - req.user._id ', req.user._id);
 					console.log('no user exist - key ', key);
 					console.log('no user exist - qrImage ', qrImage);
 					// res.sendFile({qrImage});
@@ -136,13 +136,15 @@ module.exports = app => {
 
 
 					const totpSetup = { 
-						googleId: req.user.googleId,
+						_id: req.user._id,
 						// email: req.user.emails.value,
 						key: key,
 						period: 30
 					};
 					// save to db
 					Totp(totpSetup).save();
+					
+					
 				});
 			// } else {
 			// 	// go sign in
@@ -172,8 +174,8 @@ module.exports = app => {
 		console.log('*** get route: /auth/login-otp ***');
 		console.log('**********************************');
 		// If user hasn't set up two-factor auth, redirect
-		Totp.findOne({googleId: req.user.googleId}, (err, user) => {
-			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - id: ',  {googleId: req.user.googleId});
+		Totp.findOne(req._id, (err, user) => {
+			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - id: ',  req._id);
 			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - user: ',  user);
 			if (err) { 
 				return next(err); 

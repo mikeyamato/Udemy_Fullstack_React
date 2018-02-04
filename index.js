@@ -71,7 +71,6 @@ require ('./routes/authRoutes')(app);
 // this returns a function. the 'require' statement will turn into a 
 // function that we immedately call with our express 'app' object
 require ('./routes/billingRoutes')(app);
-// require ('./routes/totpRoutes')(app);
 
 // make sure express behaves correctly in production
 // this will run when it's only inside heroku

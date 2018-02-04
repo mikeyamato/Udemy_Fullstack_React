@@ -14,8 +14,7 @@ const userSchema = new Schema ({
 
 	// we need a property of 'googleId' with a type of 'String'
 	// although the id is a set of numbers it was wrapped inside a string
-	googleId: String,
-	email: String,
+	_id: String,
 	key: String,
 	period: Number
 

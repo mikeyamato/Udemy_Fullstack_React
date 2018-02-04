@@ -11,9 +11,9 @@ const Testing = () => {
 		// is the actual object we're passing in
 		<div style={{ textAlign: 'center' }}>
 			<h1>
-				Testing Testing Testing
+				Testing
 			</h1>
-			Test
+			Testing Testing
 		</div>
 	);
 };

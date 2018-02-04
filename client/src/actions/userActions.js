@@ -30,4 +30,6 @@ export const handleToken = token =>
 		// then in theory anything in our app that depends on the user model 
 		// will be automatically updated. 
 		dispatch({ type: FETCH_USER, payload: res.data });
+		
 };
+
