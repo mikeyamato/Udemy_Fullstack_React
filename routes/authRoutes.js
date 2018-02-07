@@ -52,31 +52,35 @@ module.exports = app => {
 		'/auth/google/callback', 
 		passport.authenticate('google'),
 		(req, res) => {
-			// whenever a request comes to this function we are going to redirect who-
-			// ever is making this request off to someother route inside this app. 
-			// res (response) has a function attached to it called 'redirect'. 'redirect'
-			// will push the user to '/surveys'
-			res.redirect('/surveys');
+
+			// if totp key has been created then redirect to login page
+			// if not then redirect to landing page
+			Totp.findOne(req._id, (err, user) => {
+				// console.log('first pull - user: ', user);
+				if (err) { 
+					return next(err); 
+				} if (user) {
+					// console.log('***** user, 1st pull', user);
+					res.redirect('/login-otp');
+				} else {
+					res.redirect('/surveys');
+				}
+			});
+			
+			// res.redirect('/surveys');
+
 		}
 	);
 
 
 	// ********* TOTP OAuth *********
 	
-	// app.get('/', function(req, res){
-	// 	res.render('index', { user: req.user });
-	// });
-
-	// To view account details, user must be authenticated using two factors
-	app.get('/account', requireLogin, ensureSecondFactor, (req, res) => {
-		res.render('account', { user: req.user });
-	});
-
-	app.get('/setup', requireLogin, (req, res, next) => {
-		Totp.findOne({ googleId: req.user.googleId }, (err, user) => {
-			// const = user;
-			// const secretKey = user.key
-			// const googleIdentification= req.user.googleId
+	// when creating QR code. must be logged in. 
+	app.get('/auth/setup', requireLogin, (req, res, next) => {
+		console.log('******************************');
+		console.log('*** get route: /setup ***');
+		console.log('******************************');
+		Totp.findOne(req._id, (err, user) => {
 
 			console.log('first pull - user: ', user);
 			// console.log('first pull - google id: ', { googleId: user.googleId} || null);
@@ -94,21 +98,17 @@ module.exports = app => {
 				// generate QR code for scanning into Google Authenticator
 				// reference: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 				var otpUrl = 'otpauth://totp/' + req.user.email
-									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Bitch%20Ass';
+									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Grouper:%20Mother%20Fucking%20Bitch';
 				var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
 				
-				console.log('user exist - req.user ', user);
+				console.log('user exist - user._id ', user._id);
 				console.log('user exist - key ', user.key);
 				console.log('user exist - qrImage ', qrImage);
 				
-				// res.render('setup', { 
-				// 	user: req.user, 
-				// 	key: encodedKey, 
-				// 	qrImage: qrImage 
-				// });
-
+				res.json({qrImage: qrImage});
+				
 			} 
-			if (!user) {
+			else {
 				// new two-factor setup.  generate and save a secret key
 				var key = utils.randomKey(10);
 				var encodedKey = base32.encode(key);
@@ -116,96 +116,82 @@ module.exports = app => {
 				// generate QR code for scanning into Google Authenticator
 				// reference: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 				var otpUrl = 'otpauth://totp/' + req.user.email
-										+ '?secret=' + encodedKey + '&period=30&issuer=Yo%20Momma';
+										+ '?secret=' + encodedKey + '&period=30&issuer=Grouper:%20Mother%20Fucking%20Bitch';
 				var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
 		
-				Totp.findOne({ googleId: req.user.id }, { key: key, period: 30 }, (err) => {
+				Totp.findOne(req._id, { key: key, period: 30 }, (err) => {
 					if (err) { 
 						return next(err); 
 					}
-					console.log('no user exist - user ', user);
+					console.log('no user exist - req.user._id ', req.user._id);
 					console.log('no user exist - key ', key);
 					console.log('no user exist - qrImage ', qrImage);
-					// res.sendFile({qrImage});
-					// res.render('setup',  {
-					// res.json({ qrImage: qrImage });
-					// 	// user: req.user, 
-					// 	// key: encodedKey, 
-					// 	qrImage: qrImage
-					// 	// qrImage
-					// 	// 'hello'
-					// });
-
 
 					const totpSetup = { 
-						googleId: req.user.googleId,
+						_id: req.user._id,
 						// email: req.user.emails.value,
 						key: key,
 						period: 30
 					};
 					// save to db
 					Totp(totpSetup).save();
+					
+					res.json({qrImage: qrImage});
 				});
-			} else {
-				// go sign in
-				// should this go back home? this is for people who can't sign in, right?
-				return res.redirect('/login-otp');
 			}
 		});
 	});
-
-	// app.get('/login', (req, res) => {
-	// 	res.render('login', { 
-	// 		user: req.user 
-	// 	});
-	// });
-
-	// app.post('/login', passport.authenticate('google', { 
-	// 	failureRedirect: '/login' 
-	// }),
-	// 	(req, res) => {
-	// 		res.redirect('/');
-	// 	}
-	// );
 	
-	app.get('/login-otp', requireLogin, (req, res, next) => {
+	// before entering 6-digit code, checks to see if user has the QR code setup 
+	app.get('/auth/login-otp', requireLogin, (req, res, next) => {
+		console.log('**********************************');
+		console.log('*** get route: /auth/login-otp ***');
+		console.log('**********************************');
 		// If user hasn't set up two-factor auth, redirect
-		Totp.findOne({googleId: req.user.googleId}, (err, user) => {
-			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - id: ',  {googleId: req.user.googleId});
+		Totp.findOne(req._id, (err, user) => {
+			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - id: ',  req._id);
 			console.log('&&&&&&&&&&&&&&&&& /auth/login-otp - user: ',  user);
 			if (err) { 
 				return next(err); 
 			}
 			if (!user) { 
-				return res.redirect('/setup'); 
+				console.log('333333333333 not user')
+				return res.redirect('/'); 
 			}
-			return next();
+			// else do nothing
 		});
-	// }, (req, res) => {
-	// 	console.log('$$$$$$$$$$$$ req.user: ', req.user)
-	// 	// res.render('login-otp', { 
-	// 	// 	user: req.user, 
-	// 	// 	message: req.flash('error') });
 		}
 	);
+
+	// To view account details, user must be authenticated using two factors
+	app.get('/auth/account', requireLogin, ensureSecondFactor, (req, res) => {
+		res.render('account', { user: req.user });
+	});
+
+	// used for signing into 'account'
+	function ensureSecondFactor(req, res, next) {
+		if (req.session.secondFactor == 'totp') { return next(); }
+		// if not signed in then go back home (or anywhere)
+		res.redirect('/')
+	}
+
+
+
+
 	
 	// get the otp code back
 	app.post(
-		'/login-otp', 
+		'/auth/login-otp', 
 		passport.authenticate('totp', { 
 			failureRedirect: '/login-otp' 
 		}),
 		(req, res) => {
 			req.session.secondFactor = 'totp';
-			res.redirect('/');
+			// success
+			res.redirect('/surveys');
 		}
 	);
 	
-	// used for signing into 'account'
-	function ensureSecondFactor(req, res, next) {
-		if (req.session.secondFactor == 'totp') { return next(); }
-		res.redirect('/login-otp')
-	}
 
 
 	

@@ -1,4 +1,3 @@
-// create a functional component
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -7,7 +6,7 @@ import * as actions from '../actions';
 
 class Setup extends Component {
   constructor(props) {
-    super(props);
+		super(props);
     this.state = {
       test: null,
     };
@@ -31,7 +30,7 @@ class Setup extends Component {
         <h4>Or enter the code below.</h4>
 
         <button>
-          <a href="/login-otp">Click the "Next" button to complete setup.</a>
+          <a href="/login-otp">Click here to complete setup.</a>
         </button>
       </div>
     );

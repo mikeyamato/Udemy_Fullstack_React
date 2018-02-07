@@ -6,18 +6,20 @@
 // thanks to the redux library and immediately export it from this file.
 
 import { combineReducers } from 'redux';
+import { reducer as formReducer } from "redux-form";
 import authReducer from './authReducer';
 import totpReducer from './totpReducer';
 
 // place our 'combineReducers' call and immediately export it
 export default combineReducers({
-	// wire up the 'authReducers' inside here
-	// what ever keys we provide to this object are going to represent the
-	// keys that exist inside our state object. so be sure to give some thought
-	// to the naming convention
+  // wire up the 'authReducers' inside here
+  // what ever keys we provide to this object are going to represent the
+  // keys that exist inside our state object. so be sure to give some thought
+  // to the naming convention
 
-	// the 'auth' piece of state is being manufactured/produced by the 
-	// 'authReducer'  
-	auth: authReducer,
-	totp: totpReducer
+  // the 'auth' piece of state is being manufactured/produced by the
+  // 'authReducer'
+  auth: authReducer,
+  totp: totpReducer,
+  form: formReducer
 });
