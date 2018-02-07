@@ -1,33 +1,28 @@
-work in progress
-
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { Form, Button } from 'semantic-ui-react';
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import * as actions from '../../actions';
 import {
   required,
-  email,
-  maxLength,
-  maxLength25,
-  minLength,
-  minLength2,
-  alphaNumeric,
+  maxLength6,
+  minLength6,
+  numeric,
   renderField
 } from '../utils/formValidations.js';
-import FormField from '../../constants/recruiterFields';
-import Payments from '../common/Payments';
+import FormField from '../../constants/totpFields';
 
-class RecruiterForm extends Component {
+class LoginOtpForm extends Component {
 constructor() {
   super();
   
-  this.onRecruiterSubmit = this.onRecruiterSubmit.bind(this);
+  this.onOtpSubmit = this.onOtpSubmit.bind(this);
 }
 
   renderForm() {
     const validationType =
-      FormField.name === "Email" ? email : [required, maxLength25, minLength2];
+      FormField.name === "OTP" ? numeric : [required, maxLength6, minLength6];
     const fieldForm = FormField.map(FormField => (
       <Field
         key={FormField.name}
@@ -41,28 +36,19 @@ constructor() {
     return fieldForm;
   }
 
-  onRecruiterSubmit(data) {
-    const { name, industry, website, jobsOpen, primaryContact, imgLogoURL } = data;
-    const employees = this.props.auth._id;
-    const activeEvents = this.props.event._id;
-    const RecruiterInfo = {
-      name,
-      industry,
-      website,
-      jobsOpen,
-      primaryContact,
-      imgLogoURL,
-      employees,
-      activeEvents
+  onOtpSubmit(data) {
+    const { otp } = data;
+    const OtpNumber = {
+      otp
     };
 
-    this.props.fetchRecruiter(RecruiterInfo);
+    this.props.fetchOtp(OtpNumber);
   }
 
   render() {
     const { handleSubmit, pristine, reset, submitting } = this.props;
     return (
-      <Form onSubmit={this.props.handleSubmit(this.onRecruiterSubmit)}>
+      <Form onSubmit={this.props.handleSubmit(this.onOtpSubmit)}>
         {this.renderForm()}
         <br />
         <div>
@@ -88,9 +74,9 @@ const mapStateToProps = ( state ) => ({
   event: state.event
 });
 
-RecruiterForm = reduxForm({
+LoginOtpForm = reduxForm({
   // a unique name for the form
-  form: "recruiter"
-})(RecruiterForm);
+  form: "loginOtp"
+})(LoginOtpForm);
 
-export default connect(mapStateToProps, actions)(RecruiterForm);
+export default connect(mapStateToProps, actions)(LoginOtpForm);

@@ -29,8 +29,9 @@ import Header from './Header';
 import Landing from './Landing';
 import Account from './Account';
 import Setup from './Setup';
-import LoginOTP from './LoginOTP';
-import Testing from './Testing';
+import LoginOTP from './loginOtp/LoginOtpR1';
+// import LoginOTP from './loginOtp/LoginOtp';
+
 
 
 // the following are dummy components
@@ -81,7 +82,6 @@ class App extends Component {
 						<Route exact path='/login-otp' component={LoginOTP} />
 						<Route exact path='/setup' component={Setup} />
 						<Route exact path='/account' component={Account} />
-						<Route exact path='/testing' component={Testing} />
 					</div>
 				</BrowserRouter>
 			</div>

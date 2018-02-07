@@ -18,9 +18,7 @@ const userSchema = new Schema ({
 	linkedInId: String,
 	githubId: String,
 	email: String,
-	credits: { type: Number, default: 0 },
-	key: String,
-	period: Number
+	credits: { type: Number, default: 0 }
 });
 
 // to create a model class and tell mongoose to be aware that a new collection 

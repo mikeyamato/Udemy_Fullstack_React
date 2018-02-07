@@ -30,7 +30,7 @@ class Setup extends Component {
         <h4>Or enter the code below.</h4>
 
         <button>
-          <a href="/login-otp">Click the "Next" button to complete setup.</a>
+          <a href="/login-otp">Click here to complete setup.</a>
         </button>
       </div>
     );
