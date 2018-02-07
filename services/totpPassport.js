@@ -18,14 +18,15 @@ passport.deserializeUser((id, done) => {
 
 passport.use(
 	new TotpStrategy(
-  function(totp, done) {
+  function(user, done) {
     // setup function, supply key and period to done callback
-    Totp.findOne(req._id, (err, obj) => {
-			console.log('*********obj: ', obj);
-			if (err) { 
-				return done(err); 
+    Totp.findOne({_id: user.id}, (err, obj) => {
+      console.log("*********obj: ", obj);
+      if (err) {
+        return done(err);
 			}
-      return done(null, obj.key, obj.period);
+			console.log('hello');
+      return done(null, user.key, user.period);
     });
   }
 ));

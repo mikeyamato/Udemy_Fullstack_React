@@ -29,7 +29,7 @@ import Header from './Header';
 import Landing from './Landing';
 import Account from './Account';
 import Setup from './Setup';
-import LoginOTP from './loginOtp/LoginOtpR1';
+import LoginOtpR1 from './loginOtp/LoginOtpR1';
 // import LoginOTP from './loginOtp/LoginOtp';
 
 
@@ -79,7 +79,7 @@ class App extends Component {
 						{/* previous 'Route' */}
 						<Route exact path='/surveys' component={Dashboard} />
 						<Route exact path='/surveys/new' component={SurveyNew} />
-						<Route exact path='/login-otp' component={LoginOTP} />
+						<Route exact path='/login-otp' component={LoginOtpR1} />
 						<Route exact path='/setup' component={Setup} />
 						<Route exact path='/account' component={Account} />
 					</div>
