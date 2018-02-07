@@ -26,7 +26,12 @@ class LoginOtpR1 extends Component {
 
     this.props.fetchOtp(qrCode);
   }
-
+  componentDidMount() {
+    
+    this.props.auth;
+  }
+  
+  
   render() {
     const { handleSubmit, pristine, reset, submitting } = this.props;
 
