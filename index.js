@@ -3,6 +3,7 @@ const express = require ('express');
 // require mongoose 
 const mongoose = require ('mongoose');
 // add cookie function helper
+// const cookieParser = require('cookie-parser');
 const cookieSession = require ('cookie-session');
 // add passport library and make use of cookies
 const passport = require ('passport');
@@ -10,6 +11,9 @@ const passport = require ('passport');
 const bodyParser = require('body-parser'); 
 // add keys from keys.js
 const keys = require('./config/keys');
+const flash = require('connect-flash');
+// const session = require('express-session')
+
 // add passport from services folder
 // since we aren't assigning anything to a variable, a variable isn't needed
 require ('./models/User');
@@ -42,6 +46,15 @@ const app = express();
 // comes into our application, the middleware will parse the body 
 // and assign it to the req.body property of the incoming request object
 app.use(bodyParser.json());
+
+app.use(flash());
+// app.use(session({ 
+// 	secret: 'keyboard cat',
+// 	resave: true,
+// 	saveUninitialized: true
+// }));
+
+// app.use(cookieParser());
 
 app.use(
 	// pass to the function 'app.use()', cookieSession. then to this we're

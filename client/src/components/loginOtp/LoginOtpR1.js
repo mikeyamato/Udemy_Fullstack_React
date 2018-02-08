@@ -35,7 +35,8 @@ class LoginOtpR1 extends Component {
   render() {
     const { handleSubmit, pristine, reset, submitting } = this.props;
 
-    const renderField = ({ input, label, type, meta: { touched, error, warning } }) => <div>
+    const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
+    <div>
         <label>{label}</label>
         <div>
           <input {...input} placeholder={label} type={type} />
@@ -43,7 +44,8 @@ class LoginOtpR1 extends Component {
                 {error}
               </span>) || (warning && <span>{warning}</span>))}
         </div>
-      </div>;
+      </div>
+      )
 
     return (
       <Form onSubmit={this.props.handleSubmit(this.onQrSubmit)}>

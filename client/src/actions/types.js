@@ -4,3 +4,4 @@
 // goes to reducers.
 export const FETCH_USER = 'fetch_user';
 export const FETCH_TOTP = 'fetch_totp';
+export const FETCH_OTP = 'fetch_otp';

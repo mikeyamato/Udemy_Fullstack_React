@@ -8,7 +8,12 @@ const Totp = mongoose.model('totp');
 const requireLogin = require('../middlewares/requireLogin');
 const utils = require ('../utils/utils');
 const base32 = require ('thirty-two');
+const flash = require('connect-flash');
+const session = require('express-session');
 
+
+
+mongoose.Promise = global.Promise;
 
 // wrap the routes in a fat arrow function to define 'app'. currently 'app'
 // is defined in 'index.js'
@@ -52,7 +57,6 @@ module.exports = app => {
 		'/auth/google/callback', 
 		passport.authenticate('google'),
 		(req, res) => {
-
 			// if totp key has been created then redirect to login page
 			// if not then redirect to landing page
 			Totp.findOne(req._id, (err, user) => {
@@ -77,9 +81,11 @@ module.exports = app => {
 	
 	// when creating QR code. must be logged in. 
 	app.get('/auth/setup', requireLogin, (req, res, next) => {
-		console.log('******************************');
+		console.log('*************************');
 		console.log('*** get route: /setup ***');
-		console.log('******************************');
+		console.log('*************************');
+		console.log('********* /auth/setup req.session: ', req.session);
+		
 		Totp.findOne(req._id, (err, user) => {
 
 			console.log('first pull - user: ', user);
@@ -175,23 +181,34 @@ module.exports = app => {
 		res.redirect('/')
 	}
 
-
-
-
 	
 	// get the otp code back
 	app.post(
 		'/auth/login-otp', 
-		passport.authenticate('totp', { 
-			failureRedirect: '/login-otp' 
+		passport.authenticate('totp',  { 
+			// failureRedirect: '/auth/login-otp',
+			// failureFlash: true 
 		}),
-		(req, res) => {
-			req.session.secondFactor = 'totp';
-			// success
-			res.redirect('/surveys');
+		
+		function(err, user, info) {
+			console.log("****** authenticate ******");
+			console.log(err);
+			console.log(user);
+			console.log(info);
 		}
+
+		// function (req, res) {
+		// 	console.log('****** authenticate req.session before ', req.session)
+		// 	req.session.secondFactor = 'totp';
+		// 	console.log('****** authenticate req.session after ', req.session)
+		// 	res.redirect('/surveys');
+		// }
 	);
 	
+
+
+
+
 
 
 	

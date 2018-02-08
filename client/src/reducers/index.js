@@ -9,6 +9,7 @@ import { combineReducers } from 'redux';
 import { reducer as formReducer } from "redux-form";
 import authReducer from './authReducer';
 import totpReducer from './totpReducer';
+import otpReducer from './otpReducer';
 
 // place our 'combineReducers' call and immediately export it
 export default combineReducers({
@@ -21,5 +22,6 @@ export default combineReducers({
   // 'authReducer'
   auth: authReducer,
   totp: totpReducer,
-  form: formReducer
+  form: formReducer,
+  otp: otpReducer
 });
