@@ -86,7 +86,9 @@ module.exports = app => {
 		console.log('*************************');
 		console.log('********* /auth/setup req.session: ', req.session);
 		
-		Totp.findOne(req._id, (err, user) => {
+		const id = req.session.passport.user;
+		console.log('$$$$$$$$$$$$ id ', id)
+		Totp.findOne({_id:id}, (err, user) => {
 
 			console.log('first pull - user: ', user);
 			// console.log('first pull - google id: ', { googleId: user.googleId} || null);
