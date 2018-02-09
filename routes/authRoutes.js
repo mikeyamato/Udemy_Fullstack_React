@@ -81,19 +81,10 @@ module.exports = app => {
 	
 	// when creating QR code. must be logged in. 
 	app.get('/auth/setup', requireLogin, (req, res, next) => {
-		console.log('*************************');
-		console.log('*** get route: /setup ***');
-		console.log('*************************');
-		console.log('********* /auth/setup req.session: ', req.session);
-		
-		const id = req.session.passport.user;
-		console.log('$$$$$$$$$$$$ id ', id)
-		Totp.findOne({_id:id}, (err, user) => {
 
-			console.log('first pull - user: ', user);
-			// console.log('first pull - google id: ', { googleId: user.googleId} || null);
-			// console.log('first pull - id: ', user.googleId || null );
-			
+		const id = req.session.passport.user;
+
+		Totp.findOne({_id:id}, (err, user) => {
 
 			if (err) { 
 				return next(err); 
@@ -106,12 +97,8 @@ module.exports = app => {
 				// generate QR code for scanning into Google Authenticator
 				// reference: https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 				var otpUrl = 'otpauth://totp/' + req.user.email
-									+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Grouper:%20Mother%20Fucking%20Bitch';
+							+ '?secret=' + encodedKey + '&period=' + (user.period || 30) + '&issuer=Grouper:%20Mother%20Fucking%20Bitch';
 				var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);
-				
-				console.log('user exist - user._id ', user._id);
-				console.log('user exist - key ', user.key);
-				console.log('user exist - qrImage ', qrImage);
 				
 				res.json({qrImage: qrImage});
 				
@@ -131,10 +118,6 @@ module.exports = app => {
 					if (err) { 
 						return next(err); 
 					}
-					console.log('no user exist - req.user._id ', req.user._id);
-					console.log('no user exist - key ', key);
-					console.log('no user exist - qrImage ', qrImage);
-
 					const totpSetup = { 
 						_id: req.user._id,
 						// email: req.user.emails.value,
@@ -188,8 +171,8 @@ module.exports = app => {
 	app.post(
 		'/auth/login-otp', 
 		passport.authenticate('totp',  { 
-			// failureRedirect: '/auth/login-otp',
-			// failureFlash: true 
+			failureRedirect: '/auth/login-otp',
+			failureFlash: true 
 		}),
 		
 		function(err, user, info) {
@@ -197,14 +180,14 @@ module.exports = app => {
 			console.log(err);
 			console.log(user);
 			console.log(info);
-		}
+		},
 
-		// function (req, res) {
-		// 	console.log('****** authenticate req.session before ', req.session)
-		// 	req.session.secondFactor = 'totp';
-		// 	console.log('****** authenticate req.session after ', req.session)
-		// 	res.redirect('/surveys');
-		// }
+		function(req, res) {
+			console.log('****** authenticate req.session before ', req.session)
+			req.session.secondFactor = 'totp';
+			console.log('****** authenticate req.session after ', req.session)
+			res.redirect('/surveys');
+		}
 	);
 	
 

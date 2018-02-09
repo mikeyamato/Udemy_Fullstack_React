@@ -5,20 +5,31 @@ import { connect } from "react-redux";
 import * as actions from '../../actions';
 // import { withRouter } from "react-router-dom";
 
+const renderField = ({
+  input,
+  label,
+  type,
+  meta: { touched, error, warning }
+}) => (
+  <div>
+    <label>{label}</label>
+    <div>
+      <input {...input} placeholder={label} type={type} />
+      {touched &&
+        ((error && <span>{error}</span>) ||
+          (warning && <span>{warning}</span>))}
+    </div>
+  </div>
+);
+
 class LoginOtpR1 extends Component {
   constructor(props) {
     super(props);
     this.state = { value: "" };
 
-    // this.handleChange = this.handleChange.bind(this);
+    this.renderCodeInput = this.renderCodeInput.bind(this);
     this.onQrSubmit = this.onQrSubmit.bind(this);
   }
-
-  // to see value as we type
-  // handleChange(data) {
-  //   this.setState({ value: data.target.value });
-  //   console.log("handleChange: event.target.value", data.target.value);
-  // }
 
   onQrSubmit(data) {
     console.log(data);
@@ -27,34 +38,26 @@ class LoginOtpR1 extends Component {
     this.props.fetchOtp(qrCode);
   }
   componentDidMount() {
-    
     this.props.auth;
   }
   
+  renderCodeInput() {
+    return( 
+      <Field
+        name="qrCode"
+        type="number"
+        label="QR Code"
+        component={renderField}
+      />
+    )
+  }
   
   render() {
     const { handleSubmit, pristine, reset, submitting } = this.props;
 
-    const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
-    <div>
-        <label>{label}</label>
-        <div>
-          <input {...input} placeholder={label} type={type} />
-          {touched && ((error && <span>
-                {error}
-              </span>) || (warning && <span>{warning}</span>))}
-        </div>
-      </div>
-      )
-
     return (
       <Form onSubmit={this.props.handleSubmit(this.onQrSubmit)}>
-        <Field
-          name="qrCode"
-          type="number"
-          label="QR Code"
-          component={renderField}
-        />
+        {this.renderCodeInput()}
         <div>
           <Button
             type="button"

@@ -11,10 +11,10 @@ export const fetchTotp = () => async dispatch => {
 
 
 export const fetchOtp = (data) => async dispatch => {
-	// console.log('**** totpActions POST - data', data);
+	console.log('**** totpActions POST - data', data);
 	const res = await axios.post('/auth/login-otp', data)
 	
-	// console.log('**** totpActions POST - res', res);
+	console.log('**** totpActions POST - res', res);
 	// console.log('**** totpActions POST - res.data', res.data);
 
 	dispatch({ type: FETCH_OTP, payload: res.data });
